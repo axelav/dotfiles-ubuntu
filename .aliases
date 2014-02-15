@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+
+# Easier navigation: .., ..., ...., ....., ......, ~ and -
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ......="cd ../../../../.."
+alias ~="cd ~" # `cd` is probably faster to type though
+alias -- -="cd -"
+
+# Detect which `ls` flavor is in use
+if ls --color > /dev/null 2>&1; then # GNU `ls`
+    colorflag="--color"
+else # OS X `ls`
+    colorflag="-G"
+fi
+
+export LS_COLORS='no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:'
+
+# Always use color output for `ls`
+alias ls="command ls ${colorflag}"
+
+# Utilities
+alias a="ack -i"
+alias bashrc="source ~/.bashrc"
+alias c="pygmentize -g"
+alias chrome="open -a 'Google Chrome'"
+alias d="cd ~/Dropbox && clear"
+alias du="du -h -d 1"
+alias g="git"
+alias grep='GREP_COLOR="1;37;45" LANG=C grep --color=auto'
+alias h="history"
+alias j="jobs -l"
+alias fs="stat -c \"%s bytes\"" # File size
+alias l="clear && pwd && ls -FlhX ${colorflag}" # List all files colorized in human-readable, long format sorted by extension
+alias la="clear && pwd && ls -FlhXa ${colorflag}" # List all files colorized in human-readable, long format sorted by extension, including dot files
+alias lr="clear && pwd && ls -lR ${colorflag}" # Recursively list all files colorized, long format
+alias lsd='ls -lh ${colorflag} | grep "^d"' # List only directories
+alias o="open"
+alias oo="open ."
+alias p="cd ~/Dropbox/projects && clear && pwd && ls -FlhX ${colorflag}"
+alias ps='ps -ax' # View all processes
+alias psd="open *psd" # open all PSD files in a directory
+alias s="sublime"
+alias ss="sublime ."
+alias t="touch"
+alias tmux="tmux -2" # force tmux to use 256 colors
+alias u="cd .. && l" # A nifty one stolen from Chad Whitacre: http://chad.whitacre.usesthis.com/
+alias update='sudo softwareupdate -i -a; brew update; brew upgrade; npm update npm -g; npm update -g' # Get OS X Software Updates, and update Homebrew, npm, and their installed packages
+alias v="vim"
+
+# Mistypes
+alias vm="mv"
+
+# Enable aliases to be sudo’ed
+alias sudo='sudo '
+
+# Stopwatch
+alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
+
+# Networking
+alias flush="dscacheutil -flushcache" # Flush Directory Service cache
+alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias ips="ifconfig -a | grep -o 'inet6\? \(\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\)\|[a-fA-F0-9:]\+\)' | sed -e 's/inet6* //'"
+alias localip="ipconfig getifaddr en0"
+alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+alias whois="whois -h whois-servers.net"
+
+# Clean up LaunchServices to remove duplicates in the “Open With” menu
+alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder"
+
+# Canonical hex dump; some systems have this symlinked
+type -t hd > /dev/null || alias hd="hexdump -C"
+
+# OS X has no `md5sum`, so use `md5` as a fallback
+type -t md5sum > /dev/null || alias md5sum="md5"
+
+# Recursively delete `.DS_Store` files
+alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
+
+# Archive & extract archives
+alias ztar="tar -cvzf" #new_file *.txt
+alias uztar="tar -zxvf"
+
+# Git shortcuts
+# alias ga='git add'
+# alias gl='clear && git log --graph --decorate --pretty=oneline -n 20 --abbrev-commit'
+# alias gs='clear && git status -sb'
+# alias gd='git diff'
+# alias gds='git diff --stat'
+# alias gdc='git diff --cached'
+# alias gm='git commit -m'
+# alias gma='git commit -am'
+# alias gcl='git clone'
+# Delete multiple removed files from a repo at once // http://
+# lol & lola stolen from http://blog.repl.ca/2011/12/my-gitconfig-2011-edition.html
+# alias lol='git log --graph --decorate --pretty=oneline --abbrev-commit'
+# alias lola='git log --graph --decorate --pretty=oneline --abbrev-commit --all'
+
+# Undo a `git push`
+alias undopush="git push -f origin HEAD^:master"
+
+# gco      => git checkout master
+# gco bugs => git checkout bugs
+function gco {
+  if [ -z "$1" ]; then
+    git checkout master
+  else
+    git checkout $1
+  fi
+}
+
+# ROT13-encode text. Works for decoding, too! ;)
+alias rot13='tr a-zA-Z n-za-mN-ZA-M'
+
+# Empty the Trash on all mounted volumes and the main HDD
+# Also, clear Apple’s System Logs to improve shell startup speed
+alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl"
+
+# Show/hide hidden files in Finder
+alias show="defaults write com.apple.finder AppleShowAllFiles TRUE && killall Finder"
+alias hide="defaults write com.apple.finder AppleShowAllFiles FALSE && killall Finder"
+
+# Hide/show all desktop icons (useful when presenting)
+alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+
+# URL-encode strings
+alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'
+
+# Disable Spotlight
+alias spotoff="sudo mdutil -a -i off"
+# Enable Spotlight
+alias spoton="sudo mdutil -a -i on"
+
+# PlistBuddy alias, because sometimes `defaults` just doesn’t cut it
+alias plistbuddy="/usr/libexec/PlistBuddy"
+
+# Launch iOS Simulator
+alias ios="open -a /Applications/Xcode.app/Contents/Applications/iPhone\ Simulator.app"
+
+# One of @janmoesen’s ProTip™s
+for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
+	alias "$method"="http '$method'"
+done
+
+# Stuff I never really use but cannot delete either because of http://xkcd.com/530/
+alias stfu="osascript -e 'set volume output muted true'"
+alias pumpitup="osascript -e 'set volume 10'"
+
+# Make Grunt print stack traces by default
+command -v grunt > /dev/null && alias grunt="grunt --stack"
+
+# Backup
+alias backup="rsync -avz --delete --progress --exclude-from '/Users/axelav/.rsync_excludes' /Users/axelav/ /Volumes/BigBoi/axelav/"
+
+# Kill all the tabs in Chrome to free up memory
+# [C] explained: http://www.commandlinefu.com/commands/view/402/exclude-grep-from-your-grepped-output-of-ps-alias-included-in-description
+alias chromekill="ps ux | grep '[C]hrome Helper --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
+
+# Spotify CLI
+# $ npm install -g spotify-cli
+alias play="spotify play"
+alias pause="spotify pause"
+alias prev="spotify prev"
+alias next="spotify next"
